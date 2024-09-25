@@ -450,3 +450,284 @@ function fetchData() {
 function logSensitiveData(user) {
     console.log("Logging sensitive user info:", user); // Exposing sensitive data in logs
 }
+
+
+// ================================
+// Large Codebase with Various Issues
+// ================================
+
+// ================================
+// Code Smells, Duplicates, and Bugs
+// ================================
+
+// Duplicate code and complex conditionals
+function calculateFinalPrice(items, taxRate, discountCode, isInternational, loyaltyPoints) {
+    let total = 0;
+
+    // Duplicate loop for calculating total price
+    for (let i = 0; i < items.length; i++) {
+        total += items[i].price * items[i].quantity;
+    }
+
+    // Tax application
+    total += total * (taxRate / 100);
+
+    // Code smell: Too many magic numbers
+    if (discountCode === "SAVE50") {
+        total -= 50;
+    } else if (discountCode === "SAVE10") {
+        total -= 10;
+    }
+
+    // Another duplicate discount application
+    if (loyaltyPoints > 100) {
+        total -= 5;
+    } else if (loyaltyPoints > 200) {
+        total -= 10;
+    }
+
+    // Bug: Shipping fee is applied even when order is not international
+    if (isInternational) {
+        total += 30;
+    }
+
+    return total;
+}
+
+// Duplicate code: Similar structure as the previous function
+function calculateTotalWithCoupons(items, taxRate, couponCode, hasMembership) {
+    let total = 0;
+
+    // Duplicate loop for calculating total price
+    for (let i = 0; i < items.length; i++) {
+        total += items[i].price * items[i].quantity;
+    }
+
+    // Tax application
+    total += total * (taxRate / 100);
+
+    // More magic numbers, duplicated logic
+    if (couponCode === "DISCOUNT50") {
+        total -= 50;
+    } else if (couponCode === "DISCOUNT20") {
+        total -= 20;
+    }
+
+    if (hasMembership) {
+        total -= 15; // Arbitrary magic number
+    }
+
+    return total;
+}
+
+// ================================
+// Cyclomatic Complexity and Bugs
+// ================================
+
+function validateForm(user) {
+    if (user) {
+        if (user.name && user.name.length > 0) {
+            if (user.email && user.email.includes('@')) {
+                if (user.age && user.age > 18) {
+                    if (user.password && user.password.length > 6) {
+                        console.log('User is valid');
+                    } else {
+                        console.log('Invalid password'); // Bug: password length not validated properly
+                    }
+                } else {
+                    console.log('Invalid age');
+                }
+            } else {
+                console.log('Invalid email');
+            }
+        } else {
+            console.log('Invalid name');
+        }
+    } else {
+        console.log('No user provided');
+    }
+}
+
+// Overly complex function with multiple conditionals
+function processOrders(orders) {
+    let processedOrders = 0;
+
+    for (let i = 0; i < orders.length; i++) {
+        let order = orders[i];
+
+        if (order.status === 'NEW') {
+            console.log('Processing new order:', order.id);
+            processedOrders++;
+        } else if (order.status === 'PENDING') {
+            if (order.items && order.items.length > 0) {
+                console.log('Processing pending order:', order.id);
+                processedOrders++;
+            }
+        } else if (order.status === 'SHIPPED') {
+            if (order.items.length > 0 && order.shippingInfo) {
+                console.log('Order shipped:', order.id);
+                processedOrders++;
+            }
+        } else if (order.status === 'COMPLETED') {
+            console.log('Order completed:', order.id);
+        } else {
+            console.log('Unknown order status:', order.id);
+        }
+
+        // Bug: No handling for 'CANCELLED' status
+    }
+
+    return processedOrders;
+}
+
+// ================================
+// Security Vulnerabilities and Bugs
+// ================================
+
+// Security vulnerability: SQL injection
+function getUserData(userId) {
+    // User input is directly used in the query, allowing SQL injection
+    let query = "SELECT * FROM users WHERE id = '" + userId + "'";
+    database.execute(query, function(err, result) {
+        if (err) throw err;
+        return result;
+    });
+}
+
+// Security vulnerability: Exposed sensitive information
+function processPayment(cardNumber, expiry, cvv, amount) {
+    // Bug: Sensitive data is passed directly without encryption
+    let paymentData = {
+        cardNumber: cardNumber,
+        expiry: expiry,
+        cvv: cvv,
+        amount: amount
+    };
+
+    // Security issue: This information should be encrypted
+    paymentGateway.process(paymentData);
+
+    return "Payment processed";
+}
+
+// Security vulnerability: XSS attack
+function displayUserComment(comment) {
+    // Bug: User input is not sanitized, allowing XSS attacks
+    document.getElementById("commentSection").innerHTML += "<p>" + comment + "</p>";
+}
+
+// ================================
+// Duplicate Code and Dead Code
+// ================================
+
+// Dead code: Function is never called
+function debugOrder(order) {
+    console.log('Debugging order:', order);
+}
+
+// Duplicate code: Almost identical to `debugOrder`
+function logOrderDetails(order) {
+    console.log('Order details:', order);
+}
+
+// Unused function (dead code)
+function unusedFunction() {
+    console.log('This function is never used');
+}
+
+// Duplicate code: Same logic used in another part of the codebase
+function applyCoupon(total, coupon) {
+    if (coupon === 'SUMMER50') {
+        total -= 50;
+    } else if (coupon === 'FALL30') {
+        total -= 30;
+    }
+
+    return total;
+}
+
+// ================================
+// More Cyclomatic Complexity and Code Smells
+// ================================
+
+// Overly complex function
+function calculateShipping(country, weight, expedited, discountCode) {
+    let shippingCost = 0;
+
+    if (country === 'USA') {
+        if (expedited) {
+            shippingCost = weight * 10;
+        } else {
+            shippingCost = weight * 5;
+        }
+    } else if (country === 'Canada') {
+        if (expedited) {
+            shippingCost = weight * 8;
+        } else {
+            shippingCost = weight * 4;
+        }
+    } else if (country === 'International') {
+        if (expedited) {
+            shippingCost = weight * 15;
+        } else {
+            shippingCost = weight * 7;
+        }
+    }
+
+    if (discountCode === 'SHIPFREE') {
+        shippingCost = 0; // Code smell: Magic number, no handling of minimum order
+    } else if (discountCode === 'HALFPRICE') {
+        shippingCost /= 2; // Code smell: Arbitrary handling of discount
+    }
+
+    return shippingCost;
+}
+
+// ================================
+// Security Vulnerabilities Continued
+// ================================
+
+// Security vulnerability: Hardcoded credentials
+function connectToDatabase() {
+    // Security issue: Hardcoded credentials should not be in source code
+    const username = "admin";
+    const password = "password123";
+    
+    database.connect(username, password);
+}
+
+// Security vulnerability: Open redirects
+function redirectTo(url) {
+    // Bug: Open redirect vulnerability, user-provided URL should be validated
+    window.location.href = url;
+}
+
+// ================================
+// Buggy Async Code and Promises
+// ================================
+
+// Bug: Callback hell and nested promises
+function fetchData() {
+    database.getUserById(1, function(user) {
+        if (user) {
+            database.getOrdersByUser(user.id, function(orders) {
+                if (orders && orders.length > 0) {
+                    for (let i = 0; i < orders.length; i++) {
+                        console.log('Order:', orders[i]);
+                        database.getOrderDetails(orders[i].id, function(details) {
+                            console.log('Order details:', details);
+                            database.getShippingInfo(details.shippingId, function(info) {
+                                console.log('Shipping info:', info);
+                            });
+                        });
+                    }
+                }
+            });
+        }
+    });
+}
+
+// Security vulnerability: Sensitive data exposure in logs
+function logSensitiveData(user) {
+    console.log("Logging sensitive user info:", user); // Exposing sensitive data in logs
+}
