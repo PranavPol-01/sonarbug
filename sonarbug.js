@@ -726,8 +726,24 @@ function fetchData() {
         }
     });
 }
+// Duplicate code: Same logic used elsewhere
+function applyCoupon(total, coupon) {
+    if (coupon === 'SAVE50') {
+        total -= 50;
+    } else if (coupon === 'SAVE10') {
+        total -= 10;
+    }
 
-// Security vulnerability: Sensitive data exposure in logs
-function logSensitiveData(user) {
-    console.log("Logging sensitive user info:", user); // Exposing sensitive data in logs
+    return total;
+}
+
+// Bug: Incorrect logic when applying high discount
+function calculateDiscount(price, discount) {
+    if (discount > 0 && discount < 100) {
+        return price - (price * discount / 100);
+    } else if (discount >= 100) {
+        return price; // Bug: No discount applied when it should be free or heavily reduced
+    } else {
+        return price; // Bug: Negative discounts not handled
+    }
 }
